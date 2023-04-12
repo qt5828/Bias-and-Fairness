@@ -1,0 +1,15 @@
+# 모델
+/**/save*/
+
+# 데이터셋
+/**/dataset/
+
+# 로그
+nohup.out
+nohup1.out
+nohup
+nohup1
+FullySuper/nohup.out
+FullySuper/nohup1.out
+FullySuper/nohup
+FullySuper/nohup1
