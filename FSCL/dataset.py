@@ -120,14 +120,6 @@ class CelebaLoader(Dataset):
         print(self.img_list[-1])
         print(len(self.img_list))
         self.img_list.sort()
-        raise Exception("FINISH")
-        
-        
-        # print(self.att[0])
-        # print(self.att[-1])
-        # print(len(self.att))
-        # raise Exception("FINISH")
-
         
         self.att=np.array(self.att)
         self.att=(self.att=='1').astype(int)
