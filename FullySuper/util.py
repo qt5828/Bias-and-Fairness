@@ -44,7 +44,7 @@ def accuracy(output, target):
         pred = pred.t()
         correct = pred.eq(target.view(1, -1).expand_as(pred))
 
-        print(correct)
+        # print(correct)
         correct_k = correct[:1].view(-1).float().sum(0, keepdim=True)
         res = (correct_k.mul_(100.0 / batch_size)).item()
         return res
