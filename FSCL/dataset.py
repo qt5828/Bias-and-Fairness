@@ -114,11 +114,15 @@ class CelebaLoader(Dataset):
                     self.img_list.append(att_list[i][0])
                 else:
                     pass
-        
+        # print(self.att[0])
+        # print(self.att[1])
         print(self.img_list[0])
         print(self.img_list[-1])
         print(len(self.img_list))
         self.img_list.sort()
+        raise Exception("FINISH")
+        
+        
         # print(self.att[0])
         # print(self.att[-1])
         # print(len(self.att))
@@ -160,7 +164,10 @@ class CelebaLoader(Dataset):
         img1=Image.open(self.data_folder+'img_align_celeba/'+self.img_list[index1])
         img2=Image.open(self.data_folder+'img_align_celeba/'+self.img_list[index2])
     
-     
+        # print(self.img_list[index1])
+        # print(ta)
+        # print(sa)
+        
         return self.transform(img1),ta,sa
 
 

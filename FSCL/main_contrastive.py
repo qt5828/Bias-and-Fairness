@@ -245,8 +245,11 @@ def train(train_loader, model, criterion, optimizer, epoch, opt):
         f1, f2 = torch.split(features, [bsz, bsz], dim=0)
         features = torch.cat([f1.unsqueeze(1), f2.unsqueeze(1)], dim=1)
 
-
-
+        # print(len(features[0]))
+        # print(features[0])
+        # print(ta)
+        # print(sa)
+        # raise Exception("FINISH")
 
         loss = criterion(features,ta,sa,opt.group_norm,opt.method,epoch)
 
