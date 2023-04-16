@@ -67,7 +67,7 @@ def parse_option():
     
 
     # method
-    parser.add_argument('--method', type=str, default='FSCL',
+    parser.add_argument('--method', type=str, default='FSCL*',
                         choices=['FSCL','FSCL*','SupCon', 'SimCLR'], help='choose method')
     #norm
     parser.add_argument('--group_norm', type=int, default=0, help='group normalization')
