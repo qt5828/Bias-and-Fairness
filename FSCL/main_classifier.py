@@ -300,9 +300,9 @@ def validate(val_loader, model, classifier, criterion, opt):
                 odds_num+=1
                 odds+=torch.abs(groupAcc[i][j].avg-groupAcc[i][k].avg)
    
-    EO = odds=(odds/odds_num).item()
+    equalized_odd = (odds/odds_num).item()
     print('\n * Acc@1 {top1.avg:.3f}'.format(top1=top1))
-    print(' * Equalized Odds {odds:.3f}'.format(odds=(odds/odds_num)))#.item()))
+    print(' * Equalized Odds {odds:.3f}'.format(odds=(odds/odds_num).item()))
     print(' * Group-wise accuracy')
     for i in range(opt.ta_cls):
         string='    Target class '+str(i)+'\n    '
@@ -310,7 +310,7 @@ def validate(val_loader, model, classifier, criterion, opt):
             string+= '    Sensitive class '+str(j)+': {groupAcc.avg:.3f}'.format(groupAcc=groupAcc[i][j])
         print(string+'\n') 
 
-    return losses.avg, top1.avg, EO
+    return losses.avg, top1.avg, equalized_odd
 
 
 def main():
@@ -340,22 +340,22 @@ def main():
             epoch, time2 - time1, acc))
 
         # eval for one epoch
-        loss, val_acc, EO = validate(val_loader, model, classifier, criterion, opt)
+        loss, val_acc, equalized_odd = validate(val_loader, model, classifier, criterion, opt)
         if val_acc > best_acc:
             best_acc = val_acc
-            best_acc_EO = EO
+            best_acc_EO = equalized_odd
             best_acc_epoch = epoch
-        if EO < best_EO:
-            best_EO = EO
+        if equalized_odd < best_EO:
+            best_EO = equalized_odd
             best_EO_acc = val_acc
             best_EO_epoch = epoch
         if epoch == 10:
             acc_10 = val_acc
-            EO_10 = EO
+            equalized_odd_10 = equalized_odd
 
     print('best accuracy / EO / epoch : {:.2f} / {:.2f} / {}'.format(best_acc, best_acc_EO, best_acc_epoch))
     print('accuracy / best EO / epoch : {:.2f} / {:.2f} / {}'.format(best_EO_acc, best_EO, best_EO_epoch))
-    print('10 epoch accuracy / EO / epoch : {:.2f} / {:.2f} / {}'.format(acc_10, EO_10, 10))
+    print('10 epoch accuracy / EO / epoch : {:.2f} / {:.2f} / {}'.format(acc_10, equalized_odd_10, 10))
 
 
 if __name__ == '__main__':
