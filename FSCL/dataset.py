@@ -86,40 +86,35 @@ class UTKLoader(Dataset):
 class CelebaLoader(Dataset):
     def __init__(self,split,ta,ta2,sa,sa2,data_folder,transform):
         self.data_folder=data_folder
-        # if split==0:
-        #     self.img_list=os.listdir(self.data_folder+'train')
-        # elif split==1:
-        #     self.img_list=os.listdir(self.data_folder+'val')
-        # else :
-        #     self.img_list=os.listdir(self.data_folder+'test')
-        self.img_list = []
+        if split==0:
+            self.img_list=os.listdir(self.data_folder+'train')
+        elif split==1:
+            self.img_list=os.listdir(self.data_folder+'val')
+        else :
+            self.img_list=os.listdir(self.data_folder+'test')
+
         self.split=split
+        self.img_list.sort()
         self.transform=transform
-        self.att = []
+        self.att=[]
         
-        with open(self.data_folder + 'list_attr_celeba.txt', 'r') as f:
-            att_list = []
-            for line in f.readlines()[2:]:  # 첫 두 줄은 주석이므로 제외
-                att_list.append(line.strip().split())
 
-        with open(self.data_folder + 'list_eval_partition.txt', 'r') as f:
-            eval_list = []
-            for line in f.readlines()[0:]:  # 첫 두 줄은 주석이므로 제외
-                eval_list.append(line.strip().split())
+        with open(self.data_folder+'list_attr_celeba.csv','r') as f:
+            reader=csv.reader(f)
+            att_list=list(reader)
+        att_list=att_list[1:]
 
+        with open(self.data_folder+'list_eval_partition.csv','r') as f:
+            reader=csv.reader(f)
+            eval_list=list(reader)
+    
         for i,eval_inst in enumerate(eval_list):
             if eval_inst[1]==str(self.split):
                 if att_list[i][0]==eval_inst[0]:
                     self.att.append(att_list[i])
-                    self.img_list.append(att_list[i][0])
                 else:
                     pass
-        # print(self.att[0])
-        # print(self.att[1])
-        print(self.img_list[0])
-        print(self.img_list[-1])
-        print(len(self.img_list))
-        self.img_list.sort()
+
         
         self.att=np.array(self.att)
         self.att=(self.att=='1').astype(int)
@@ -143,23 +138,17 @@ class CelebaLoader(Dataset):
 
         
         index2=random.choice(range(len(self.img_list)))
-        # if self.split==0:
-        #     img1=Image.open(self.data_folder+'train/'+self.img_list[index1])
-        #     img2=Image.open(self.data_folder+'train/'+self.img_list[index2])
-        # elif self.split==1:
-        #     img1=Image.open(self.data_folder+'val/'+self.img_list[index1])
-        #     img2=Image.open(self.data_folder+'val/'+self.img_list[index2])
-        # else:
-        #     img1=Image.open(self.data_folder+'test/'+self.img_list[index1])
-        #     img2=Image.open(self.data_folder+'test/'+self.img_list[index2])
-
-        img1=Image.open(self.data_folder+'img_align_celeba/'+self.img_list[index1])
-        img2=Image.open(self.data_folder+'img_align_celeba/'+self.img_list[index2])
+        if self.split==0:
+            img1=Image.open(self.data_folder+'train/'+self.img_list[index1])
+            img2=Image.open(self.data_folder+'train/'+self.img_list[index2])
+        elif self.split==1:
+            img1=Image.open(self.data_folder+'val/'+self.img_list[index1])
+            img2=Image.open(self.data_folder+'val/'+self.img_list[index2])
+        else:
+            img1=Image.open(self.data_folder+'test/'+self.img_list[index1])
+            img2=Image.open(self.data_folder+'test/'+self.img_list[index2])
     
-        # print(self.img_list[index1])
-        # print(ta)
-        # print(sa)
-        
+     
         return self.transform(img1),ta,sa
 
 

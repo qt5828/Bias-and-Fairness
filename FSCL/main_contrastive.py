@@ -10,7 +10,6 @@ import torch
 import torch.backends.cudnn as cudnn
 from torchvision import transforms, datasets
 
-import tensorboard_logger as tb_logger
 from util import TwoCropTransform, AverageMeter
 from util import adjust_learning_rate, warmup_learning_rate
 from util import set_optimizer, save_model
@@ -24,8 +23,6 @@ try:
 except ImportError:
     pass
 
-# os.environ["CUDA_DEVICE_ORDER"]="PCI_BUS_ID"
-# os.environ["CUDA_VISIBLE_DEVICES"]= "1"
 
 def parse_option():
     parser = argparse.ArgumentParser('argument for training')
@@ -97,9 +94,8 @@ def parse_option():
     # check if dataset is path that passed required arguments
     # set the path according to the environment
     if opt.data_folder is None:
-        opt.data_folder = '../dataset/'
+        opt.data_folder = './datasets/'
     opt.model_path = './save/FairSupCon/{}_models'.format(opt.dataset)
-    opt.tb_path = './save/SupCon/{}_tensorboard'.format(opt.dataset)
   
     iterations = opt.lr_decay_epochs.split(',')
     opt.lr_decay_epochs = list([])
@@ -127,10 +123,7 @@ def parse_option():
         else:
             opt.warmup_to = opt.learning_rate
 
-    opt.tb_folder = os.path.join(opt.tb_path, opt.model_name)
-    if not os.path.isdir(opt.tb_folder):
-        os.makedirs(opt.tb_folder)
-        
+
     opt.save_folder = os.path.join(opt.model_path, opt.model_name,opt.name)
     if not os.path.isdir(opt.save_folder):
         os.makedirs(opt.save_folder)
@@ -173,8 +166,6 @@ def set_loader(opt):
     return train_loader
 
 
-# ! Set the Seed
-
 def set_model(opt):
     model = FairSupConResNet(name=opt.model)
     criterion = FairSupConLoss(temperature=opt.temp)
@@ -183,7 +174,6 @@ def set_model(opt):
     if opt.syncBN:
         model = apex.parallel.convert_syncbn_model(model)
 
-    # Continue the Train
     if opt.ckpt!='':
         ckpt = torch.load(opt.ckpt, map_location='cpu')
         state_dict = ckpt['model']
@@ -245,11 +235,8 @@ def train(train_loader, model, criterion, optimizer, epoch, opt):
         f1, f2 = torch.split(features, [bsz, bsz], dim=0)
         features = torch.cat([f1.unsqueeze(1), f2.unsqueeze(1)], dim=1)
 
-        # print(len(features[0]))
-        # print(features[0])
-        # print(ta)
-        # print(sa)
-        # raise Exception("FINISH")
+
+
 
         loss = criterion(features,ta,sa,opt.group_norm,opt.method,epoch)
 
@@ -291,8 +278,7 @@ def main():
     # build optimizer
     optimizer = set_optimizer(opt, model)
 
-    # tensorboard
-    logger = tb_logger.Logger(logdir=opt.tb_folder, flush_secs=2)
+
     
     # training routine
     for epoch in range(s_epoch+1, opt.epochs + 1):
@@ -305,9 +291,7 @@ def main():
         time2 = time.time()
         print('epoch {}, total time {:.2f}'.format(epoch, time2 - time1))
 
-        # tensorboard logger
-        logger.log_value('loss', loss, epoch)
-        logger.log_value('learning_rate', optimizer.param_groups[0]['lr'], epoch)
+     
 
         if epoch % opt.save_freq == 0:
             save_file = os.path.join(
@@ -321,5 +305,6 @@ def main():
 
 
 if __name__ == '__main__':
+    
     main()
     
